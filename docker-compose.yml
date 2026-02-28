@@ -1,0 +1,68 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: mapscraper-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - mapscraper-net
+    environment:
+      MONGO_INITDB_DATABASE: mapscraper
+
+  backend:
+    build: ./backend
+    container_name: mapscraper-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    networks:
+      - mapscraper-net
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/mapscraper
+      SCRAPER_URL: http://scraper:8000
+
+  scraper:
+    build: ./scraper
+    container_name: mapscraper-scraper
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    networks:
+      - mapscraper-net
+    env_file:
+      - .env
+    environment:
+      BACKEND_URL: http://backend:5000
+    volumes:
+      - scraper_outputs:/app/outputs
+
+  frontend:
+    build: ./frontend
+    container_name: mapscraper-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - mapscraper-net
+    environment:
+      VITE_API_URL: http://localhost:5000
+      VITE_RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
+
+volumes:
+  mongo_data:
+  scraper_outputs:
+
+networks:
+  mapscraper-net:
+    driver: bridge

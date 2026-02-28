@@ -1,0 +1,13 @@
+[variables]
+PLAYWRIGHT_BROWSERS_PATH = "/usr/local/ms-playwright"
+
+[phases.install]
+dependsOn = ["setup"]
+cmds = [
+  "pip install -r requirements.txt",
+  "playwright install chromium",
+  "playwright install-deps chromium"
+]
+
+[start]
+cmd = "uvicorn main:app --host 0.0.0.0 --port $PORT"

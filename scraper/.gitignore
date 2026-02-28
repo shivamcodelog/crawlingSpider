@@ -1,0 +1,22 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.pyc
+.venv/
+venv/
+
+# ── Environment ──
+.env
+!.env.example
+
+# ── Scraped output files ──
+outputs/*.xlsx
+outputs/*.csv
+outputs/*.json
+
+# ── Backups ──
+*.bak
+
+# ── Playwright browser cache (installed at deploy time) ──
+ms-playwright/
+.local-chromium/

@@ -1,0 +1,13 @@
+# ── Node ──
+node_modules/
+npm-debug.log*
+
+# ── Environment ──
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ── Vite build output ──
+dist/
+.vite/

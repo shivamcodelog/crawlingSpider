@@ -1,0 +1,69 @@
+# ═══════════════════════════════════════════════════════════
+#   MapScraper Pro — Root .gitignore
+# ═══════════════════════════════════════════════════════════
+
+# ── Environment files (contain secrets — NEVER commit) ──
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ── Node ──
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.venv/
+venv/
+env/
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Scraper outputs (Excel files scraped data) ──
+scraper/outputs/*.xlsx
+scraper/outputs/*.csv
+scraper/outputs/*.json
+scraper/__pycache__/
+scraper/*.bak
+
+# ── Vite / Frontend build ──
+frontend/dist/
+frontend/.vite/
+
+# ── OS ──
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# ── IDE ──
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Logs ──
+logs/
+*.log
+
+# ── Misc ──
+*.bak
+*.tmp
+.cache/

@@ -1,0 +1,15 @@
+# ── Node ──
+node_modules/
+npm-debug.log*
+
+# ── Environment ──
+.env
+.env.local
+!.env.example
+
+# ── Logs ──
+logs/
+*.log
+
+# ── Misc ──
+*.bak

@@ -1,0 +1,21 @@
+{
+  "name": "mapscraper-pro",
+  "version": "1.0.0",
+  "description": "**Google Maps Data Extraction Platform** — A production-ready Mini SaaS that scrapes business data from Google Maps at scale.",
+  "main": "index.js",
+  "scripts": {
+    "predev": "npx kill-port 3000 5000 8000 || true",
+    "dev": "concurrently --kill-others-on-fail --prefix-colors \"bgBlue.bold,bgGreen.bold,bgMagenta.bold\" --names \"BACKEND ,FRONTEND,SCRAPER \" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\" \"uvicorn main:app --host 0.0.0.0 --port 8000 --reload --app-dir scraper\"",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:scraper": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload --app-dir scraper",
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "kill-port": "^2.0.1"
+  }
+}

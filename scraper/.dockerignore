@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+*.bak
+.env
+venv/
+.venv/
+outputs/
+ms-playwright/

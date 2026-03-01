@@ -191,12 +191,16 @@ def run_job_sync(job_id: str, queries: list, total_records: int, output_filename
 
 def _notify_backend(job_id, status, result_file=None, result_count=0, error_message=None):
     try:
+        headers = {}
+        secret = os.environ.get("INTERNAL_SECRET")
+        if secret:
+            headers["x-internal-secret"] = secret
         with httpx.Client(timeout=10) as client:
             client.post(BACKEND_URL + "/internal/job-complete", json={
                 "jobId": job_id, "status": status,
                 "resultFile": result_file, "resultCount": result_count,
                 "errorMessage": error_message,
-            })
+            }, headers=headers)
     except Exception as e:
         print("[SCRAPER] Notify failed:", e)
 

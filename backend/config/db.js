@@ -22,6 +22,8 @@ const connectDB = async () => {
     console.log(`[DB] MongoDB connected: ${conn.connection?.host || "cached"}`);
   } catch (error) {
     console.error(`[DB] Connection error: ${error.message}`);
+    // Reset both so the next request retries a fresh connection
+    cached = null;
     global._mongooseConnection = null;
     throw error;
   }

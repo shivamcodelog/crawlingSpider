@@ -37,6 +37,8 @@ export function AuthProvider({ children }) {
 
   const login = (token) => {
     localStorage.setItem("msp_token", token);
+    // Set loading=true so ProtectedRoute shows spinner while fetchUser resolves
+    setLoading(true);
     fetchUser();
   };
 
@@ -77,9 +79,10 @@ export function useTokenFromUrl() {
     const token = searchParams.get("token");
     if (token) {
       login(token);
-      // Remove token from URL
+      // Remove token from URL and navigate to dashboard
       searchParams.delete("token");
       setSearchParams(searchParams, { replace: true });
+      navigate("/dashboard", { replace: true });
     }
-  }, [searchParams, login, setSearchParams]);
+  }, [searchParams, login, setSearchParams, navigate]);
 }

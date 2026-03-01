@@ -403,8 +403,13 @@ router.get("/:id/download", verifyJWT, async (req, res) => {
 });
 
 // POST /internal/job-complete — Called by scraper when a job finishes
-// No JWT needed — internal service-to-service call
+// Secured with INTERNAL_SECRET shared secret
 router.post("/job-complete", async (req, res) => {
+  // Verify shared secret to prevent unauthorised job-complete calls
+  const secret = req.headers["x-internal-secret"] || req.body.internalSecret;
+  if (process.env.INTERNAL_SECRET && secret !== process.env.INTERNAL_SECRET) {
+    return res.status(403).json({ success: false, message: "Forbidden." });
+  }
   try {
     const { jobId, resultFile, resultCount, status, errorMessage } = req.body;
 

@@ -1,11 +1,25 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+const SpiderIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="4" fill="#e8e8e8" />
+    <line x1="14" y1="10" x2="14" y2="2" stroke="#555" strokeWidth="1" />
+    <line x1="14" y1="18" x2="14" y2="26" stroke="#555" strokeWidth="1" />
+    <line x1="10" y1="14" x2="2" y2="14" stroke="#555" strokeWidth="1" />
+    <line x1="18" y1="14" x2="26" y2="14" stroke="#555" strokeWidth="1" />
+    <line x1="11.2" y1="11.2" x2="5.5" y2="5.5" stroke="#444" strokeWidth="1" />
+    <line x1="16.8" y1="16.8" x2="22.5" y2="22.5" stroke="#444" strokeWidth="1" />
+    <line x1="16.8" y1="11.2" x2="22.5" y2="5.5" stroke="#444" strokeWidth="1" />
+    <line x1="11.2" y1="16.8" x2="5.5" y2="22.5" stroke="#444" strokeWidth="1" />
+  </svg>
+);
 
 export default function Login() {
   const { user, loading, login } = useAuth();
@@ -54,9 +68,9 @@ export default function Login() {
         className="bg-surface border border-border rounded p-10 max-w-md w-full text-center"
       >
         <div className="flex items-center justify-center gap-3 mb-8">
-          <MapPin className="w-8 h-8 text-primary" />
+          <SpiderIcon />
           <span className="font-mono text-2xl font-bold">
-            MapScraper<span className="text-primary">Pro</span>
+            Shizuku<span className="text-[#555]">8</span>
           </span>
         </div>
 
@@ -68,19 +82,19 @@ export default function Login() {
         </p>
 
         {/* Tab switcher */}
-        <div className="flex rounded overflow-hidden border border-border mb-6">
+        <div className="flex rounded overflow-hidden border border-border mb-6 cursor-target">
           <button
             onClick={() => { setTab("google"); setError(""); }}
-            className={`flex-1 py-2 text-xs font-mono transition-colors ${
-              tab === "google" ? "bg-primary text-black font-bold" : "text-muted hover:text-textPrimary"
+            className={`cursor-target flex-1 py-2 text-xs font-mono transition-colors ${
+              tab === "google" ? "bg-white text-black font-bold" : "text-muted hover:text-textPrimary"
             }`}
           >
             Google
           </button>
           <button
             onClick={() => { setTab("email"); setError(""); }}
-            className={`flex-1 py-2 text-xs font-mono transition-colors ${
-              tab === "email" ? "bg-primary text-black font-bold" : "text-muted hover:text-textPrimary"
+            className={`cursor-target flex-1 py-2 text-xs font-mono transition-colors ${
+              tab === "email" ? "bg-white text-black font-bold" : "text-muted hover:text-textPrimary"
             }`}
           >
             Email / Password
@@ -90,7 +104,7 @@ export default function Login() {
         {tab === "google" ? (
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded bg-white text-gray-800 font-mono text-sm font-semibold hover:bg-gray-100 transition-colors"
+            className="cursor-target w-full flex items-center justify-center gap-3 py-4 rounded bg-white text-gray-800 font-mono text-sm font-semibold hover:bg-gray-100 transition-colors"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -112,7 +126,7 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="admin@example.com"
-                  className="w-full bg-bg border border-border rounded pl-9 pr-3 py-3 text-sm font-mono text-textPrimary placeholder-muted focus:outline-none focus:border-primary"
+                  className="cursor-target w-full bg-bg border border-border rounded pl-9 pr-3 py-3 text-sm font-mono text-textPrimary placeholder-muted focus:outline-none focus:border-[#3a3a3a]"
                 />
               </div>
             </div>
@@ -126,12 +140,12 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full bg-bg border border-border rounded pl-9 pr-9 py-3 text-sm font-mono text-textPrimary placeholder-muted focus:outline-none focus:border-primary"
+                  className="cursor-target w-full bg-bg border border-border rounded pl-9 pr-9 py-3 text-sm font-mono text-textPrimary placeholder-muted focus:outline-none focus:border-[#3a3a3a]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((p) => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-textPrimary"
+                  className="cursor-target absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-textPrimary"
                 >
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -145,7 +159,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded bg-primary text-black font-mono text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-60"
+              className="cursor-target w-full flex items-center justify-center gap-2 py-3 rounded bg-white text-black font-mono text-sm font-bold hover:bg-[#e5e5e5] transition-colors disabled:opacity-60"
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               {submitting ? "Signing in…" : "Sign In"}

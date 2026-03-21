@@ -25,6 +25,14 @@ const verifyJWT = async (req, res, next) => {
       });
     }
 
+    if (user.isBanned) {
+      return res.status(403).json({
+        success: false,
+        data: null,
+        message: "Account banned.",
+      });
+    }
+
     req.user = user;
     next();
   } catch (error) {

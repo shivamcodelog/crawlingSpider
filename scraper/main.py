@@ -17,8 +17,9 @@ from typing import Optional
 
 import httpx
 from fastapi import FastAPI, BackgroundTasks, HTTPException
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
+import cloudinary
+import cloudinary.uploader
 
 from scraper_engine import run_scrape_job, OUTPUTS_DIR, JobCancelled
 
@@ -39,6 +40,22 @@ executor = ThreadPoolExecutor(max_workers=4)
 
 # ── Backend callback URL ──
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:5000")
+
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+)
+
+
+def upload_to_cloudinary(filepath: str, job_id: str) -> str:
+    result = cloudinary.uploader.upload(
+        filepath,
+        resource_type="raw",
+        public_id=f"mapscraper/{job_id}",
+        overwrite=True,
+    )
+    return result["secure_url"]
 
 
 # ══════════════════════════════════════════
@@ -160,7 +177,16 @@ def run_job_sync(job_id: str, queries: list, total_records: int, output_filename
                 "total": total_records,
             }
 
-        _notify_backend(job_id, "done", result["resultFile"], result["resultCount"])
+        try:
+            file_url = upload_to_cloudinary(result["resultFile"], job_id)
+            try:
+                os.remove(result["resultFile"])
+            except Exception:
+                pass
+            _notify_backend(job_id, "done", file_url, result["resultCount"])
+        except Exception as e:
+            print(f"[SCRAPER] Cloudinary upload failed: {e}")
+            _notify_backend(job_id, "failed", error_message=f"File upload failed: {str(e)}")
 
     except JobCancelled:
         # Clean cancellation — user pressed Kill Job
@@ -193,7 +219,9 @@ def _notify_backend(job_id, status, result_file=None, result_count=0, error_mess
     try:
         headers = {}
         secret = os.environ.get("INTERNAL_SECRET")
-        if secret:
+        if not secret:
+            print("[SCRAPER] WARNING: INTERNAL_SECRET not set")
+        else:
             headers["x-internal-secret"] = secret
         with httpx.Client(timeout=10) as client:
             client.post(BACKEND_URL + "/internal/job-complete", json={
@@ -306,17 +334,9 @@ async def cancel_job(job_id: str):
     return {"success": True, "message": "Cancellation requested."}
 
 
-@app.get("/scrape/download/{job_id}")
-async def download_result(job_id: str):
-    filepath = os.path.join(OUTPUTS_DIR, job_id + ".xlsx")
-    if not os.path.exists(filepath):
-        raise HTTPException(status_code=404, detail="Result file not found.")
-    return FileResponse(
-        path=filepath, filename=job_id + ".xlsx",
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+
+# THIS IS SCRAPER/MAIN.PY 

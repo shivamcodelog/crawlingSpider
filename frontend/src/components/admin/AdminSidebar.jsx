@@ -47,7 +47,7 @@ export default function AdminSidebar() {
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-6 h-6 text-primary" />
           <span className="font-mono text-base font-bold text-textPrimary">
-            MapScraper<span className="text-primary">Admin</span>
+            Shizuku8<span className="text-primary">Admin</span>
           </span>
         </div>
         {user && (

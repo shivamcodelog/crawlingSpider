@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 const FAKE_LINES = [
-  { text: "$ mapscraper --query \"Textile Industry in Surat\"", color: "text-success" },
+  { text: "$ shizuku8 --query \"Textile Industry in Surat\"", color: "text-success" },
   { text: "[INFO] Launching Chromium headless browser...", color: "text-muted" },
   { text: "[INFO] Navigating to Google Maps...", color: "text-muted" },
   { text: "[INFO] Scrolling feed to load listings...", color: "text-muted" },
@@ -66,7 +66,7 @@ export default function TerminalWindow() {
         <div className="w-3 h-3 rounded-full bg-yellow-500" />
         <div className="w-3 h-3 rounded-full bg-success" />
         <span className="ml-3 font-mono text-xs text-muted">
-          mapscraper-pro — scraping session
+          shizuku8 — scraping session
         </span>
       </div>
 

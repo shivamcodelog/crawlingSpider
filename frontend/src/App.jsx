@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import TargetCursor from "./components/TargetCursor";
 
 // User pages
 import Landing from "./pages/Landing";
@@ -105,6 +106,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <TargetCursor
+          spinDuration={2.1}
+          hideDefaultCursor
+          parallaxOn
+          hoverDuration={0.2}
+        />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>

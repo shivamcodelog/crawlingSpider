@@ -37,6 +37,10 @@ export default function Settings() {
     }
   };
 
+  // TODO: This is a client-side placeholder only.
+  // Production implementation should generate and persist
+  // API keys server-side via POST /api/user/api-key
+  // and store them hashed in the database.
   const generateApiKey = () => {
     // Generate a random API key (in production this would be done server-side)
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

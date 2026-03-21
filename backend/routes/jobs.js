@@ -107,6 +107,7 @@ router.post("/create", verifyJWT, async (req, res) => {
           creditsUsed: creditsNeeded,
           progress: { current: 0, total: totalRecordsRequested },
           status: "queued",
+          startedAt: new Date(),
         },
       ],
       { session }
@@ -352,53 +353,16 @@ router.post("/:id/retry", verifyJWT, async (req, res) => {
 // GET /api/jobs/:id/download — Download the result Excel file
 router.get("/:id/download", verifyJWT, async (req, res) => {
   try {
-    const job = await ScrapeJob.findOne({
-      _id: req.params.id,
-      userId: req.user._id,
-    });
-
+    const job = await ScrapeJob.findOne({ _id: req.params.id, userId: req.user._id });
     if (!job) {
-      return res.status(404).json({
-        success: false,
-        data: null,
-        message: "Job not found.",
-      });
+      return res.status(404).json({ success: false, message: "Job not found." });
     }
-
     if (job.status !== "done" || !job.resultFile) {
-      return res.status(400).json({
-        success: false,
-        data: null,
-        message: "Job is not complete or has no result file.",
-      });
+      return res.status(400).json({ success: false, message: "Job not complete or no result file." });
     }
-
-    // Fetch the file from scraper service
-    try {
-      const response = await axios.get(
-        `${SCRAPER_URL}/scrape/download/${job._id}`,
-        { responseType: "stream", timeout: 30000 }
-      );
-
-      const filename = job.outputFilename || "output.xlsx";
-      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-      response.data.pipe(res);
-    } catch (err) {
-      console.error("[JOBS] Download error from scraper:", err.message);
-      return res.status(500).json({
-        success: false,
-        data: null,
-        message: "Failed to download file from scraper service.",
-      });
-    }
+    return res.redirect(job.resultFile);
   } catch (error) {
-    console.error("[JOBS] Download error:", error);
-    return res.status(500).json({
-      success: false,
-      data: null,
-      message: "Failed to download job result.",
-    });
+    return res.status(500).json({ success: false, message: "Download failed." });
   }
 });
 
@@ -406,8 +370,12 @@ router.get("/:id/download", verifyJWT, async (req, res) => {
 // Secured with INTERNAL_SECRET shared secret
 router.post("/job-complete", async (req, res) => {
   // Verify shared secret to prevent unauthorised job-complete calls
-  const secret = req.headers["x-internal-secret"] || req.body.internalSecret;
-  if (process.env.INTERNAL_SECRET && secret !== process.env.INTERNAL_SECRET) {
+  const secret = req.headers["x-internal-secret"];
+  if (!process.env.INTERNAL_SECRET) {
+    console.error("[SECURITY] INTERNAL_SECRET not set — rejecting all internal requests");
+    return res.status(500).json({ success: false, message: "Server misconfiguration." });
+  }
+  if (secret !== process.env.INTERNAL_SECRET) {
     return res.status(403).json({ success: false, message: "Forbidden." });
   }
   try {

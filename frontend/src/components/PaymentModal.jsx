@@ -19,7 +19,7 @@ export default function PaymentModal({ plan, onClose, onSuccess }) {
         key: RAZORPAY_KEY,
         amount: data.data.amount,
         currency: data.data.currency,
-        name: "MapScraper Pro",
+        name: "Shizuku8",
         description: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
         order_id: data.data.orderId,
         handler: async (response) => {

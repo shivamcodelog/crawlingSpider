@@ -156,7 +156,8 @@ router.get("/users", async (req, res) => {
 
     const filter = {};
     if (req.query.search) {
-      const re = new RegExp(req.query.search, "i");
+      const escaped = req.query.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp(escaped, "i");
       filter.$or = [{ name: re }, { email: re }];
     }
     if (req.query.plan) filter.plan = req.query.plan;

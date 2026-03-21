@@ -7,9 +7,22 @@ import {
   CreditCard,
   Settings,
   LogOut,
-  MapPin,
   ShieldCheck,
 } from "lucide-react";
+
+const SpiderIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="4" fill="#e8e8e8" />
+    <line x1="14" y1="10" x2="14" y2="2" stroke="#555" strokeWidth="1" />
+    <line x1="14" y1="18" x2="14" y2="26" stroke="#555" strokeWidth="1" />
+    <line x1="10" y1="14" x2="2" y2="14" stroke="#555" strokeWidth="1" />
+    <line x1="18" y1="14" x2="26" y2="14" stroke="#555" strokeWidth="1" />
+    <line x1="11.2" y1="11.2" x2="5.5" y2="5.5" stroke="#444" strokeWidth="1" />
+    <line x1="16.8" y1="16.8" x2="22.5" y2="22.5" stroke="#444" strokeWidth="1" />
+    <line x1="16.8" y1="11.2" x2="22.5" y2="5.5" stroke="#444" strokeWidth="1" />
+    <line x1="11.2" y1="16.8" x2="5.5" y2="22.5" stroke="#444" strokeWidth="1" />
+  </svg>
+);
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -33,9 +46,9 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
-          <MapPin className="w-7 h-7 text-primary" />
+          <SpiderIcon />
           <span className="font-mono text-lg font-bold text-textPrimary">
-            MapScraper<span className="text-primary">Pro</span>
+            Shizuku<span className="text-primary">8</span>
           </span>
         </div>
         {user && (

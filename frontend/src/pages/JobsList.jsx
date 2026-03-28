@@ -57,15 +57,15 @@ export default function JobsList() {
   };
 
   return (
-    <div className="flex min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg">
       <Sidebar />
-      <main className="ml-64 flex-1 p-8">
+      <main className="pt-16 lg:pt-4 lg:ml-64 p-6 space-y-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
             <div>
               <h1 className="font-mono text-section text-textPrimary">
                 My Jobs

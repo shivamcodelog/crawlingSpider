@@ -183,7 +183,7 @@ router.post("/stripe/checkout", verifyJWT, async (req, res) => {
     }
 
     const stripe = getStripe();
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = process.env.CLIENT_URL || process.env.FRONTEND_URL || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],

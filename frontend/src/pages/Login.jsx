@@ -39,7 +39,8 @@ export default function Login() {
   }, [user, loading, navigate]);
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_URL}/auth/google`;
+    const returnTo = encodeURIComponent(window.location.origin);
+    window.location.href = `${API_URL}/auth/google?returnTo=${returnTo}`;
   };
 
   const handleEmailLogin = async (e) => {

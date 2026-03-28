@@ -52,9 +52,9 @@ export default function Billing() {
   };
 
   return (
-    <div className="flex min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg">
       <Sidebar />
-      <main className="ml-64 flex-1 p-8">
+      <main className="pt-16 lg:pt-4 lg:ml-64 p-6 max-w-6xl mx-auto space-y-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

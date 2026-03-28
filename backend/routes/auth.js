@@ -6,6 +6,49 @@ const axios = require("axios");
 const { verifyJWT } = require("../middleware/authMiddleware");
 const User = require("../models/User");
 
+const DEFAULT_FRONTEND_URL = "http://localhost:5173";
+const LOCAL_FRONTEND_ORIGINS = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",
+];
+
+const getAllowedFrontendOrigins = () => {
+  const envOrigins = (process.env.CLIENT_URL || process.env.FRONTEND_URL || DEFAULT_FRONTEND_URL)
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  return new Set([...envOrigins, ...LOCAL_FRONTEND_ORIGINS]);
+};
+
+const resolveFrontendUrl = (candidate) => {
+  const allowed = getAllowedFrontendOrigins();
+  try {
+    if (!candidate) return null;
+    const origin = new URL(candidate).origin;
+    return allowed.has(origin) ? origin : null;
+  } catch {
+    return null;
+  }
+};
+
+const getDefaultFrontendUrl = () =>
+  resolveFrontendUrl(process.env.CLIENT_URL) || resolveFrontendUrl(process.env.FRONTEND_URL) || DEFAULT_FRONTEND_URL;
+
+const encodeState = (payload) => Buffer.from(JSON.stringify(payload)).toString("base64url");
+
+const decodeState = (value) => {
+  try {
+    if (!value) return null;
+    return JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
+  } catch {
+    return null;
+  }
+};
+
 // Generate JWT token
 const generateToken = (user) => {
   return jwt.sign(
@@ -33,24 +76,32 @@ async function updateGeoAndActivity(userId, ip) {
 }
 
 // GET /auth/google — Redirect to Google OAuth consent screen
-router.get(
-  "/google",
-  passport.authenticate("google", {
+router.get("/google", (req, res, next) => {
+  const safeReturnTo = resolveFrontendUrl(req.query.returnTo);
+  const state = safeReturnTo ? encodeState({ returnTo: safeReturnTo }) : undefined;
+
+  const authOptions = {
     scope: ["profile", "email"],
     session: false,
-  })
-);
+  };
+
+  if (state) authOptions.state = state;
+
+  passport.authenticate("google", authOptions)(req, res, next);
+});
 
 // GET /auth/google/callback — Handle Google OAuth callback
 router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: `${process.env.FRONTEND_URL || "http://localhost:3000"}/login?error=auth_failed`,
+    failureRedirect: `${getDefaultFrontendUrl()}/login?error=auth_failed`,
   }),
   (req, res) => {
     const token = generateToken(req.user);
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const stateData = decodeState(req.query.state);
+    const stateFrontendUrl = resolveFrontendUrl(stateData?.returnTo);
+    const frontendUrl = stateFrontendUrl || getDefaultFrontendUrl();
     // Fire-and-forget geo+activity update
     const ip = req.headers["x-forwarded-for"]?.split(",")[0].trim() || req.socket?.remoteAddress;
     updateGeoAndActivity(req.user._id, ip);

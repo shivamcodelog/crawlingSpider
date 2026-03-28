@@ -4,18 +4,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: "#0A0A0A",
-        surface: "#111111",
-        border: "#1F1F1F",
-        primary: "#FF6B00",
-        textPrimary: "#EDEDED",
-        muted: "#666666",
+        bg: "#080808",
+        surface: "#0d0d0d",
+        border: "#1a1a1a",
+        primary: "#E8E8E8",
+        textPrimary: "#E8E8E8",
+        muted: "#555555",
         success: "#22C55E",
         error: "#EF4444",
       },
       fontFamily: {
-        mono: ['"Space Mono"', "monospace"],
-        sans: ['"Inter"', "system-ui", "sans-serif"],
+        mono: ['"JetBrains Mono"', '"Fira Code"', '"Courier New"', "monospace"],
+        sans: ['"JetBrains Mono"', '"Fira Code"', '"Courier New"', "monospace"],
       },
       fontSize: {
         hero: ["56px", { lineHeight: "1.1", fontWeight: "700" }],
@@ -25,14 +25,14 @@ export default {
         caption: ["12px", { lineHeight: "1.4", fontWeight: "500", letterSpacing: "0.1em" }],
       },
       borderRadius: {
-        DEFAULT: "6px",
+        DEFAULT: "4px",
       },
       spacing: {
         grid: "8px",
       },
       boxShadow: {
-        glow: "0 0 20px rgba(255, 107, 0, 0.1)",
-        "glow-lg": "0 0 40px rgba(255, 107, 0, 0.15)",
+        glow: "0 0 20px rgba(232, 232, 232, 0.08)",
+        "glow-lg": "0 0 40px rgba(232, 232, 232, 0.1)",
       },
       keyframes: {
         scanline: {

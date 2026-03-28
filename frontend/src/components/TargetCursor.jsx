@@ -2,8 +2,24 @@ import { useEffect, useRef, useCallback, useMemo } from "react";
 import { gsap } from "gsap";
 import "./TargetCursor.css";
 
+const DEFAULT_TARGET_SELECTOR = [
+  ".cursor-target",
+  "a[href]",
+  "button",
+  "input",
+  "textarea",
+  "select",
+  "summary",
+  "[role='button']",
+  "[role='link']",
+  "[role='tab']",
+  "[role='menuitem']",
+  "[tabindex]:not([tabindex='-1'])",
+  "[data-cursor-target='true']"
+].join(", ");
+
 const TargetCursor = ({
-  targetSelector = ".cursor-target",
+  targetSelector = DEFAULT_TARGET_SELECTOR,
   spinDuration = 2,
   hideDefaultCursor = true,
   hoverDuration = 0.2,
@@ -61,6 +77,47 @@ const TargetCursor = ({
     let activeTarget = null;
     let currentLeaveHandler = null;
     let resumeTimeout = null;
+
+    const interactiveRoles = new Set(["button", "link", "tab", "menuitem", "switch", "option"]);
+
+    const hasClickableCursor = element => {
+      try {
+        return window.getComputedStyle(element).cursor === "pointer";
+      } catch {
+        return false;
+      }
+    };
+
+    const isTargetCandidate = element => {
+      if (!element || !(element instanceof Element)) return false;
+      if (element.matches(targetSelector)) return true;
+
+      const tag = element.tagName.toLowerCase();
+      if (["a", "button", "input", "textarea", "select", "summary", "label"].includes(tag)) return true;
+
+      const role = element.getAttribute("role");
+      if (role && interactiveRoles.has(role.toLowerCase())) return true;
+
+      const tabIndex = element.getAttribute("tabindex");
+      if (tabIndex !== null && tabIndex !== "-1") return true;
+
+      if (element.hasAttribute("data-cursor-target")) return true;
+
+      return hasClickableCursor(element);
+    };
+
+    const resolveTargetFromNode = startNode => {
+      let current = startNode instanceof Element ? startNode : null;
+      while (current && current !== document.body) {
+        const rect = current.getBoundingClientRect();
+        const isVisible = rect.width > 8 && rect.height > 8;
+        if (isVisible && isTargetCandidate(current)) {
+          return current;
+        }
+        current = current.parentElement;
+      }
+      return null;
+    };
 
     const cleanupTarget = target => {
       if (currentLeaveHandler) {
@@ -133,7 +190,7 @@ const TargetCursor = ({
       const elementUnderMouse = document.elementFromPoint(mouseX, mouseY);
       const isStillOverTarget =
         elementUnderMouse &&
-        (elementUnderMouse === activeTarget || elementUnderMouse.closest(targetSelector) === activeTarget);
+        (elementUnderMouse === activeTarget || activeTarget.contains(elementUnderMouse));
       if (!isStillOverTarget) {
         if (currentLeaveHandler) {
           currentLeaveHandler();
@@ -158,16 +215,7 @@ const TargetCursor = ({
     window.addEventListener("mouseup", mouseUpHandler);
 
     const enterHandler = e => {
-      const directTarget = e.target;
-      const allTargets = [];
-      let current = directTarget;
-      while (current && current !== document.body) {
-        if (current.matches(targetSelector)) {
-          allTargets.push(current);
-        }
-        current = current.parentElement;
-      }
-      const target = allTargets[0] || null;
+      const target = resolveTargetFromNode(e.target);
       if (!target || !cursorRef.current || !cornersRef.current) return;
       if (activeTarget === target) return;
       if (activeTarget) {

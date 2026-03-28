@@ -96,11 +96,37 @@ export default function Sidebar() {
     await handleLogout();
   };
 
+  const getMobilePageTitle = () => {
+    const path = location.pathname;
+    if (path === "/dashboard") return "Dashboard";
+    if (path === "/scraper/new") return "New Scrape";
+    if (path === "/scraper/jobs") return "My Jobs";
+    if (path.startsWith("/scraper/jobs/")) return "Job Details";
+    if (path === "/billing") return "Billing";
+    if (path === "/settings") return "Settings";
+    if (path.startsWith("/admin")) return "Admin";
+    return "";
+  };
+
+  const mobilePageTitle = getMobilePageTitle();
+
   return (
     <>
-      {/* MOBILE ONLY: Header with hamburger menu (desktop hides this) */}
+      {/* MOBILE ONLY: Brand + hamburger on a single row */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-surface/95 backdrop-blur border-b border-border z-40 lg:hidden">
-        <div className="h-full px-4 flex items-center justify-end">
+        <div className="h-full px-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0">
+            <SpiderIcon />
+            <p className="font-mono text-base font-bold text-textPrimary truncate">
+              Shizuku<span className="text-primary">8</span>
+            </p>
+            {mobilePageTitle ? (
+              <>
+                <span className="text-muted/60">/</span>
+                <span className="font-mono text-sm text-muted truncate">{mobilePageTitle}</span>
+              </>
+            ) : null}
+          </div>
           <button
             onClick={() => setMobileOpen((prev) => !prev)}
             className="p-2 rounded border border-border text-textPrimary hover:bg-white/5 transition-colors"
